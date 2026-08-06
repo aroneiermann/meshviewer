@@ -1,6 +1,6 @@
 import { LanguageCode } from "./utils/language.js";
 import { Node, NodeId } from "./utils/node.js";
-import { GeoJSONOptions, GridLayerOptions, LatLngBoundsExpression } from "leaflet";
+import { GeoJSONOptions, GridLayerOptions, LatLngBoundsExpression, WMSOptions } from "leaflet";
 import { GeoJsonObject } from "geojson";
 
 interface NodeAttr {
@@ -86,12 +86,13 @@ export interface Link {
 export interface MapLayer {
   name: string;
   url: string;
-  type?: string;
-  config: GridLayerOptions & {
-    start?: number; // Hour
-    end?: number; // Hour
-    order: number;
-  };
+  type?: "vector" | "wms" | string;
+  config: GridLayerOptions &
+    WMSOptions & {
+      start?: number; // Hour
+      end?: number; // Hour
+      order: number;
+    };
 }
 
 export interface Geo {

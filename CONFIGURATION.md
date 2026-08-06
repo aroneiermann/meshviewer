@@ -61,6 +61,44 @@ Defines a List of Maps that are used as a background.
   ],
 ```
 
+Each layer supports three types, selected via the optional `type` field:
+
+- _(default, no `type`)_ — an XYZ raster tile layer (`L.tileLayer`). The `url` is a tile URL template; an optional `{format}` placeholder is replaced with `webp` or `png` depending on browser support.
+- `"vector"` — a MapLibre GL vector style (`L.maplibreGL`). The `url` points to a style JSON.
+- `"wms"` — an OGC WMS endpoint (`L.tileLayer.wms`). The `url` is the WMS base URL, and WMS parameters such as `layers`, `format`, `transparent`, `version` and `styles` go into `config` alongside the usual Leaflet options (`maxZoom`, `attribution`, …).
+
+WMS example (Hessen aerial imagery and topographic map):
+
+```json
+  "mapLayers": [
+    {
+      "name": "Hessen DOP20 (Luftbild)",
+      "url": "https://www.gds-srv.hessen.de/cgi-bin/lika-services/ogc-free-images.ows",
+      "type": "wms",
+      "config": {
+        "layers": "he_dop20_rgb",
+        "format": "image/png",
+        "transparent": false,
+        "version": "1.3.0",
+        "maxZoom": 20,
+        "attribution": "Geobasisdaten &copy; HVBG"
+      }
+    },
+    {
+      "name": "Hessen DTK",
+      "url": "https://www.gds-srv.hessen.de/cgi-bin/lika-services/ogc-free-maps.ows",
+      "type": "wms",
+      "config": {
+        "layers": "he_dtk",
+        "format": "image/png",
+        "transparent": false,
+        "version": "1.3.0",
+        "attribution": "Geobasisdaten &copy; HVBG"
+      }
+    }
+  ],
+```
+
 `fixedCenter` defines the default area that is visible when opening the map.
 
 ```json

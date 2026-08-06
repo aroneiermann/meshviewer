@@ -7,9 +7,19 @@ import { Button } from "./map/button.js";
 import "./map/activearea.js";
 import { Sidebar } from "./sidebar.js";
 import { LatLng } from "leaflet";
-import { Geo } from "./config_default.js";
+import { Geo, MapLayer } from "./config_default.js";
 import { Link, LinkId, Node, NodeId } from "./utils/node.js";
 import { ObjectsLinksAndNodes } from "./datadistributor.js";
+
+// Leaflet turns every option it doesn't know into a GetMap query parameter,
+// so the meshviewer-internal scheduling fields must not reach it.
+function createWmsLayer(layer: MapLayer): L.TileLayer.WMS {
+  const config: L.WMSOptions & { start?: number; end?: number; order?: number } = { ...layer.config };
+  delete config.start;
+  delete config.end;
+  delete config.order;
+  return L.tileLayer.wms(layer.url, config);
+}
 
 let options = {
   worldCopyJump: true,
@@ -99,15 +109,17 @@ export const Map = function (linkScale: (t: any) => any, sidebar: ReturnType<typ
               attributionControl: { customAttribution: layer.config.attribution },
               maxZoom: layer.config.maxZoom,
             })
-          : L.tileLayer(
-              layer.url.replace(
-                "{format}",
-                document.createElement("canvas").toDataURL("image/webp").indexOf("data:image/webp") === 0
-                  ? "webp"
-                  : "png",
+          : layer.type == "wms"
+            ? createWmsLayer(layer)
+            : L.tileLayer(
+                layer.url.replace(
+                  "{format}",
+                  document.createElement("canvas").toDataURL("image/webp").indexOf("data:image/webp") === 0
+                    ? "webp"
+                    : "png",
+                ),
+                layer.config,
               ),
-              layer.config,
-            ),
     };
   });
 
